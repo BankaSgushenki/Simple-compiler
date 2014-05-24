@@ -7,7 +7,6 @@ class Node:
         self.firstOperand = op1
         self.secondOperand = op2
 
-
 class Parser:
 
 	PROGRAM, VAR, NUMBER, PRINT, OP = range(5)
@@ -21,29 +20,23 @@ class Parser:
 
 	def getExpression(self):
 
-		tocken = self.nextTocken()
-		newNode = Node(tocken.type, name = tocken.value)
+		token = self.lexer.nextToken()
+		newNode = Node(token.type, name = token.value)
 
-		if newNode.type == "VAR" or "NUM":
-			tocken = self.nextTocken()
-			if tocken.type == "OP":
-				operationNode = Node(tocken.type, name = tocken.value)
+		if newNode.type is "VAR" or "NUM":
+			token = self.lexer.nextToken()
+			if token.type is "OP":
+				operationNode = Node(token.type, name = token.value)
 				tempNode = newNode
 				newNode = operationNode
 				newNode.firstOperand = tempNode
 				newNode.secondOperand = self.getExpression()
-			if tocken.type == "END":
+			if token.type is "END":
 				return newNode
 
-		if self.nextTocken().value == "EOF": 
+		if self.lexer.nextToken().value is "EOF": 
 			return newNode
 		else:
-			tocken = self.priviousTocken()
+			token = self.lexer.priviousToken()
 			newNode.next = self.getExpression()
 			return newNode
-
-	def nextTocken(self):
-		return self.lexer.nextTocken()
-
-	def priviousTocken(self):
-		return self.lexer.priviousTocken()

@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import lexer
 import parser
 import compiler
 
-lexer = lexer.Lexer()
+ROOT_PATH = os.path.dirname(__file__) + "/source.txt"
+
+lexer = lexer.Lexer(ROOT_PATH)
 lexer.parse()
 
 compiler = compiler.Compiler()

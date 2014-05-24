@@ -1,77 +1,71 @@
-import os
 import re
 
-ROOT_PATH = os.path.dirname(__file__) + "/source.txt"
+class Token:
+	def __init__(self,value,stringNumber,stringPosition, type):
+        	self.value = value
+        	self.strNumber = stringNumber
+        	self.Position = stringPosition
+        	self.type = type
+        	self.id = stringNumber*1000 + stringPosition
 
 class Lexer:
+	def __init__(self, ROOT_PATH):
+        	self.ROOT_PATH = ROOT_PATH
 
-	class Tocken:
-		def __init__(self,value,stringNumber,stringPosition, type):
-        		self.value = value
-        		self.strNumber = stringNumber
-        		self.Position = stringPosition
-        		self.type = type
-        		self.id = stringNumber*1000 + stringPosition
-
-	patterns = {'NUM':'\d+', 'COND':'while|if',   'OP':'[\+\-\*\>\<\=]', 'BR':'[\(\)]', 'VAR':'[a-z]+', 'END':';','TYPE':'int|string','WS':' '}
-	tockens = []
+	patterns = {'NUM':'\d+', 'COND':'while|if',   'OP':'[\+\-\*\>\<\=]', 'BR':'[\(\)]', 'VAR':'[a-z]+', 'END':';','TYPE':'int|string','WS':'\s'}
+	tokens = []
 	lines = []
 	words = ["while", "if"]
-	nextTockenIndex = -1
-	currentTockenIndex = -1
+	nextTokenIndex = 0
 
-	def openFile(self, ROOT_PATH):
-		file = open(ROOT_PATH, "r")
-		lines = file.readlines()
+	def openFile(self):
+		file = open(self.ROOT_PATH, "r")
+		self.lines = file.readlines()
 		file.close()
-		self.lines = lines
 
-	def showTockens(self):
-		for i in range(len(self.tockens)):
-			tocken = self.tockens[i]
-			if tocken.type != 'WS':
-				print "Tocken:'" ,tocken.value,"':",tocken.strNumber,":", tocken.Position,":",tocken.type
+	def showTokens(self):
+		for token in self.tokens:
+			if token.type != 'WS':
+				print "Token:'" ,token.value,"':",token.strNumber,":",token.type
 
 	def findTokens(self):
 		for strNumber in range(len(self.lines)):
-			line = self.lines[strNumber]
-			temp = line
+			line = temp =  self.lines[strNumber]
 			for key, value in self.patterns.items():
 				regex = re.compile(value)
 				found = regex.finditer(line)
 				for match in found :
-					if key == 'COND':
+					if key is 'COND':
 						if match.group() not in self.words:
-							currentTocken = self.Tocken(match.group(),strNumber + 1,match.start(), key)
+							currentToken = Token(match.group(),strNumber + 1,match.start(), key)
 					else:
-						currentTocken = self.Tocken(match.group(),strNumber + 1,match.start(), key)
-						if currentTocken.type != "WS":
-							self.tockens.append(currentTocken)
+						currentToken = Token(match.group(),strNumber + 1,match.start(), key)
+						if currentToken.type != "WS":
+							self.tokens.append(currentToken)
 				temp = regex.sub('', temp)
-			err = re.compile('.')
-			found = err.finditer(temp)
-			for match in found :
-				print "Compilation Error: Unknown tocken:'", match.group(), ", line: ", strNumber + 1
-
+			errors = re.finditer('.',temp)
+			for match in errors :
+				print "Compilation Error: Unknown token:'", match.group(), ", line: ", strNumber + 1
+				exit (0)
+				
 	def parse(self):
-		self.openFile(ROOT_PATH)
+		self.openFile()
 		self.findTokens()
-		self.tockens.sort(key=lambda x: x.id)
-		self.tockens.append(self.Tocken("EOF", 0 , 0, 0))
-		self.showTockens()
+		self.tokens.sort(key=lambda x: x.id)
+		self.tokens.append(Token("EOF", 0 , 0, 0))
+		self.showTokens()
 	
-	def nextTocken(self):
-		if self.currentTockenIndex < len(self.tockens) - 1:
-			self.nextTockenIndex += 1
-			self.currentTockenIndex += 1
-			return self.tockens[self.nextTockenIndex]
+	def nextToken(self):
+		if self.tokens[self.nextTokenIndex].value != "EOF":
+			token = self.tokens[self.nextTokenIndex]
+			self.nextTokenIndex += 1
+			return token
 		else:
-			return self.tockens[self.nextTockenIndex]
+			return self.tokens[self.nextTokenIndex]
 
-	def priviousTocken(self):
-		self.nextTockenIndex -= 1
-		self.currentTockenIndex -= 1
-		return self.tockens[self.currentTockenIndex]
+	def priviousToken(self):
+		self.nextTokenIndex -= 1
+		return self.tokens[self.nextTokenIndex]
 
 
 
