@@ -1,0 +1,3 @@
+test = 2+5;
+temp = 4+7;
+a = test + temp;
