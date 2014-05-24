@@ -12,7 +12,7 @@ class Lexer:
 	def __init__(self, ROOT_PATH):
         	self.ROOT_PATH = ROOT_PATH
 
-	patterns = {'NUM':'\d+', 'COND':'while|if',   'OP':'[\+\-\*\>\<\=]', 'BR':'[\(\)]', 'VAR':'[a-z]+', 'END':';','TYPE':'int|string','WS':'\s'}
+	patterns = {'NUM':'\d+', 'COND':'while|if', "FUNC": 'print|read',  'OP':'[\+\-\*\>\<\=]', 'BR':'[\(\)]', 'VAR':'[a-z]+', 'END':';','WS':'\s'}
 	tokens = []
 	lines = []
 	words = ["while", "if"]
@@ -25,8 +25,7 @@ class Lexer:
 
 	def showTokens(self):
 		for token in self.tokens:
-			if token.type != 'WS':
-				print "Token:'" ,token.value,"':",token.strNumber,":",token.type
+			print "Token:'" ,token.value,"':",token.strNumber,":",token.type
 
 	def findTokens(self):
 		for strNumber in range(len(self.lines)):
@@ -35,13 +34,11 @@ class Lexer:
 				regex = re.compile(value)
 				found = regex.finditer(line)
 				for match in found :
-					if key is 'COND':
+					if key is 'VAR':
 						if match.group() not in self.words:
-							currentToken = Token(match.group(),strNumber + 1,match.start(), key)
-					else:
-						currentToken = Token(match.group(),strNumber + 1,match.start(), key)
-						if currentToken.type != "WS":
-							self.tokens.append(currentToken)
+							self.tokens.append(Token(match.group(),strNumber + 1,match.start(), key))
+					elif key is not "WS":
+							self.tokens.append(Token(match.group(),strNumber + 1,match.start(), key))
 				temp = regex.sub('', temp)
 			errors = re.finditer('.',temp)
 			for match in errors :
@@ -52,7 +49,7 @@ class Lexer:
 		self.openFile()
 		self.findTokens()
 		self.tokens.sort(key=lambda x: x.id)
-		self.tokens.append(Token("EOF", 0 , 0, 0))
+		self.tokens.append(Token("EOF", 0, 0, 0))
 		self.showTokens()
 	
 	def nextToken(self):

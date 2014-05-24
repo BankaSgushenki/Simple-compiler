@@ -34,6 +34,15 @@ class Parser:
 			if token.type is "END":
 				return newNode
 
+		if newNode.type is "FUNC":
+			token = self.lexer.nextToken()
+			if token.type is "VAR" or "NUM":
+				operandNode = Node(token.type, name = token.value)
+				newNode.firstOperand = operandNode
+				token = self.lexer.nextToken()
+			if token.type is "END":
+				return newNode
+
 		if self.lexer.nextToken().value is "EOF": 
 			return newNode
 		else:
