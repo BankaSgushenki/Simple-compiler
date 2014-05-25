@@ -4,8 +4,8 @@ class Node:
         self.name = name
         self.value = value
         self.next = next
-        self.firstOperand = op1
-        self.secondOperand = op2
+        self.op1 = op1
+        self.op2 = op2
         if type is "NUM": self.value = name
 
 class Parser:
@@ -20,7 +20,6 @@ class Parser:
 		return tree
 
 	def getExpression(self):
-
 		token = self.lexer.nextToken()
 		newNode = Node(token.type, name = token.value)
 
@@ -30,17 +29,15 @@ class Parser:
 				operationNode = Node(token.type, name = token.value)
 				tempNode = newNode
 				newNode = operationNode
-				newNode.firstOperand = tempNode
-				newNode.secondOperand = self.getExpression()
+				newNode.op1 = tempNode
+				newNode.op2 = self.getExpression()
 			if token.type is "END":
 				return newNode
 
 		if newNode.type is "FUNC":
-			#token = self.lexer.nextToken()
-			#print token.type
 			if token.type is "VAR" or "NUM":
 				operandNode = Node(token.type, name = token.value)
-				newNode.firstOperand = operandNode
+				newNode.op1 = operandNode
 				token = self.lexer.nextToken()
 			if token.type is "END":
 				return newNode
