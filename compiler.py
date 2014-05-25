@@ -39,15 +39,13 @@ class Interpreter:
 		self.countConstantes(self.tree)
 
 		if node.name is "+":
-				firstVariable = node.op1
-				secondVariable = node.op2
-				if firstVariable.type is "VAR":
-					firstVariable.value = self.variablesList[firstVariable.name]
-				if secondVariable.type is "VAR":
-					secondVariable.value = self.variablesList[secondVariable.name]
-				if secondVariable.type is "OP":
+				if node.op1.type is "VAR":
+					node.op1.value = self.variablesList[node.op1.name]
+				if node.op2.type is "VAR":
+					node.op2.value = self.variablesList[node.op2.name]
+				if node.op2.type is "OP":
 					self.countVariables(op2)
-				node.value = int(firstVariable.value) + int(secondVariable.value)
+				node.value = int(node.op1.value) + int(node.op2.value)
 
 		if node.op2: self.countVariables(node.op2)
 		if node.next: self.countVariables(node.next)
@@ -59,12 +57,10 @@ class Interpreter:
 		if node.next: self.countConstantes(node.next)
 
 		if node.name is "+":	
-			firstVariable = node.op1
-			secondVariable = node.op2
-			if firstVariable.type is "NUM" and secondVariable.type is "NUM":
-				node.value = int(firstVariable.value) + int(secondVariable.value)
+			if node.op1.type is "NUM" and node.op2.type is "NUM":
+				node.value = int(node.op1.value) + int(node.op2.value)
 				node.type = "NUM"
-				
+
 		self.defVariables(self.tree)
 		return 
 
