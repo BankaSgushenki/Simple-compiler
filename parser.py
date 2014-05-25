@@ -6,7 +6,7 @@ class Node:
         self.next = next
         self.op1 = op1
         self.op2 = op2
-        if type is "NUM": self.value = name
+        if type is "NUM" or "STR": self.value = name
 
 class Parser:
 
@@ -23,7 +23,7 @@ class Parser:
 		token = self.lexer.nextToken()
 		newNode = Node(token.type, name = token.value)
 
-		if newNode.type is "VAR" or "NUM":
+		if newNode.type is "VAR" or "NUM" or "STR":
 			token = self.lexer.nextToken()
 			if token.type is "OP":
 				operationNode = Node(token.type, name = token.value)
@@ -35,10 +35,12 @@ class Parser:
 				return newNode
 
 		if newNode.type is "FUNC":
-			if token.type is "VAR" or "NUM":
+			if token.type is "VAR" or "NUM" or "STR":
 				operandNode = Node(token.type, name = token.value)
 				newNode.op1 = operandNode
 				token = self.lexer.nextToken()
+			if token.type is "OP":
+				newNode.op1 = self.getExpression()
 			if token.type is "END":
 				return newNode
 

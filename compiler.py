@@ -10,7 +10,7 @@ class Interpreter:
 	variablesList = {}
 
 	def execute(self, node):
-		if node.type is "FUNC": self.PrintFunction(node.op1.name)
+		if node.type is "FUNC": self.PrintFunction(node.op1)
 		if node.op2: self.execute(node.op2)
 		if node.next: self.execute(node.next)
 
@@ -45,8 +45,14 @@ class Interpreter:
 					node.op2.value = self.variablesList[node.op2.name]
 				if node.op2.type is "OP":
 					self.countVariables(op2)
-				node.value = int(node.op1.value) + int(node.op2.value)
+				try: 
+					node.op1.value = int(node.op1.value)
+					node.op2.value = int(node.op2.value)
+					node.value = node.op1.value + node.op2.value
+   				except ValueError:
+					node.value = node.op1.value + node.op2.value
 
+		if node.op1: self.countVariables(node.op1)
 		if node.op2: self.countVariables(node.op2)
 		if node.next: self.countVariables(node.next)
 		self.defVariables(self.tree)	
@@ -57,9 +63,15 @@ class Interpreter:
 		if node.next: self.countConstantes(node.next)
 
 		if node.name is "+":	
-			if node.op1.type is "NUM" and node.op2.type is "NUM":
-				node.value = int(node.op1.value) + int(node.op2.value)
-				node.type = "NUM"
+			if node.op1.type is "NUM" or "STR" and node.op2.type is "NUM" or "STR":
+				try: 
+					node.op1.value = int(node.op1.value)
+					node.op2.value = int(node.op2.value)
+					node.value = node.op1.value + node.op2.value
+					node.type = "NUM"
+   				except ValueError:
+					node.value = node.op1.value + node.op2.value
+					node.type = "STR"
 
 		self.defVariables(self.tree)
 		return 
@@ -70,12 +82,14 @@ class Interpreter:
 		if node.op2: self.showTree(node.op2)
 		if node.next: self.showTree(node.next)		
 		return
-
 	def showVars(self):
 		print self.variablesList
 
-	def PrintFunction(self,variableToPrint):
-		print self.variablesList[variableToPrint]
+	def PrintFunction(self,node):
+		if node.type is "VAR": 
+			print self.variablesList[node.name]
+			return
+		if node.type is "NUM" or "STR": print node.value
 
 	def interpretate(self):
 		self.findVariables(self.tree)

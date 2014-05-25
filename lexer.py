@@ -12,7 +12,8 @@ class Lexer:
 	def __init__(self, ROOT_PATH):
         	self.ROOT_PATH = ROOT_PATH
 
-	patterns = {'NUM':'\d+', 'COND':'while|if', "FUNC": 'print|read',  'OP':'[\+\-\*\>\<\=]', 'BR':'[\(\)]', 'VAR':'[a-z]+', 'END':';','WS':'\s'}
+	patterns = {'NUM':'(?<!w|")(\d+)', 'STR':'"(\w|\s|\?|\!|\,)+"', 'COND':'while|if', "FUNC": 'print|read',  'OP':'[\+\-\*\>\<\=]', 
+	'BR':'[\(\)]', 'VAR':'(?<!")([a-z]+)', 'END':';','WS':'\s'}
 	tokens = []
 	lines = []
 	words = ["while", "if","print"]
@@ -27,6 +28,14 @@ class Lexer:
 		for token in self.tokens:
 			print "Token:'" ,token.value,"':",token.strNumber,":",token.type
 
+	def findStrings(self):
+		for strNumber in range(len(self.lines)):
+			regex = re.compile(self.patterns['STR'])
+			found = regex.finditer(self.lines[strNumber])
+			for match in found :
+				self.tokens.append(Token(match.group()[1:-1],strNumber + 1,match.start(), 'STR'))
+			self.lines[strNumber] = regex.sub('', self.lines[strNumber])
+
 	def findTokens(self):
 		for strNumber in range(len(self.lines)):
 			line = temp =  self.lines[strNumber]
@@ -37,20 +46,20 @@ class Lexer:
 					if key is 'VAR':
 						if match.group() not in self.words:
 							self.tokens.append(Token(match.group(),strNumber + 1,match.start(), key))
-					elif key is not "WS":
+					elif key is not "WS" and key is not "STR":
 							self.tokens.append(Token(match.group(),strNumber + 1,match.start(), key))
 				temp = regex.sub('', temp)
-			errors = re.finditer('.',temp)
+			errors = re.finditer('.+',temp)
 			for match in errors :
 				print "Compilation Error: Unknown token:'", match.group(), ", line: ", strNumber + 1
 				exit (0)
 				
 	def parse(self):
 		self.openFile()
+		self.findStrings()
 		self.findTokens()
 		self.tokens.sort(key=lambda x: x.id)
 		self.tokens.append(Token("EOF", 0, 0, 0))
-		#self.showTokens()
 	
 	def nextToken(self):
 		if self.tokens[self.nextTokenIndex].value != "EOF":
@@ -59,6 +68,9 @@ class Lexer:
 			return token
 		else:
 			return self.tokens[self.nextTokenIndex]
+
+	def currentToken(self):
+		return self.tokens[self.nextTokenIndex]
 
 	def priviousToken(self):
 		self.nextTokenIndex -= 1
