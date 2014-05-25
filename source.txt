@@ -1,3 +1,6 @@
-test = 2+5;
-temp = 4+7;
-a = test + temp;
+a = 5 + 6 + 1 + 1 + 1 + 1 + 1 + 1 + 1;
+b = 6 + 8;
+c = a + b;
+print c;
+print a;
+print b;

@@ -15,7 +15,7 @@ class Lexer:
 	patterns = {'NUM':'\d+', 'COND':'while|if', "FUNC": 'print|read',  'OP':'[\+\-\*\>\<\=]', 'BR':'[\(\)]', 'VAR':'[a-z]+', 'END':';','WS':'\s'}
 	tokens = []
 	lines = []
-	words = ["while", "if"]
+	words = ["while", "if","print"]
 	nextTokenIndex = 0
 
 	def openFile(self):
@@ -50,7 +50,7 @@ class Lexer:
 		self.findTokens()
 		self.tokens.sort(key=lambda x: x.id)
 		self.tokens.append(Token("EOF", 0, 0, 0))
-		self.showTokens()
+		#self.showTokens()
 	
 	def nextToken(self):
 		if self.tokens[self.nextTokenIndex].value != "EOF":

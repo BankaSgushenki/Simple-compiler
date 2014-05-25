@@ -6,6 +6,7 @@ class Node:
         self.next = next
         self.firstOperand = op1
         self.secondOperand = op2
+        if type is "NUM": self.value = name
 
 class Parser:
 
@@ -35,7 +36,8 @@ class Parser:
 				return newNode
 
 		if newNode.type is "FUNC":
-			token = self.lexer.nextToken()
+			#token = self.lexer.nextToken()
+			#print token.type
 			if token.type is "VAR" or "NUM":
 				operandNode = Node(token.type, name = token.value)
 				newNode.firstOperand = operandNode

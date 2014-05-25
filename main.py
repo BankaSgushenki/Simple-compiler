@@ -11,7 +11,7 @@ ROOT_PATH = os.path.dirname(__file__) + "/source.txt"
 lexer = lexer.Lexer(ROOT_PATH)
 lexer.parse()
 
-compiler = compiler.Compiler()
-
 parser = parser.Parser(lexer)
-compiler.showTree(parser.parse())
+
+interpreter = compiler.Interpreter(parser.parse())
+interpreter.interpretate()
