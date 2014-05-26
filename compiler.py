@@ -100,9 +100,4 @@ class Interpreter:
 		self.findVariables(self.tree)
 		self.defVariables(self.tree)
 		self.countVariables(self.tree)
-		self.execute(self.tree)
-
-
-
-
-		
+		self.execute(self.tree)	

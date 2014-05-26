@@ -53,7 +53,6 @@ class Lexer:
 			errors = re.finditer('.+',temp)
 			for match in errors :
 				print "Compilation Error: Unknown token:'", match.group(), ", line: ", strNumber + 1
-				exit (0)
 				
 	def parse(self):
 		self.openFile()
@@ -75,9 +74,3 @@ class Lexer:
 	def priviousToken(self):
 		self.nextTokenIndex -= 1
 		return self.tokens[self.nextTokenIndex]
-
-
-
-
-
-
