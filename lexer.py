@@ -6,17 +6,18 @@ class Token:
         	self.strNumber = stringNumber
         	self.Position = stringPosition
         	self.type = type
-        	self.id = stringNumber*1000 + stringPosition
+        	self.id = stringNumber*1000 + stringPosition 
+        	if value is ";": self.id += 10  #mdaa....
 
 class Lexer:
 	def __init__(self, ROOT_PATH):
         	self.ROOT_PATH = ROOT_PATH
 
-	patterns = {'NUM':'(?<!w|")(\d+)', 'STR':'"(\w|\s|\?|\!|\,)+"', 'COND':'while|if', "FUNC": 'print|read',  'OP':'[\+\-\*\>\<\=]', 
+	patterns = {'NUM':'(?<!w|")(\d+)', 'STR':'"(\w|\s|\?|\!|\,)+"', 'COND':'while|if', "FUNC": 'print|input',  'OP':'[\+\-\*\>\<\=]', 
 	'BR':'[\(\)]', 'VAR':'(?<!")([a-z]+)', 'END':';','WS':'\s'}
 	tokens = []
 	lines = []
-	words = ["while", "if","print"]
+	words = ["while", "if","print","input"]
 	nextTokenIndex = 0
 
 	def openFile(self):
