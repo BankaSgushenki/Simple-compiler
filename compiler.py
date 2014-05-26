@@ -20,11 +20,10 @@ def mathOperation(node):
 	if node.op2.type is "VAR":
 		node.op2.value = Interpreter.variablesList[node.op2.name]
 	if node.op2.type is "OP":
-		node.op2.value = Interpreter.mathOperation(node.op2)	
+		node.op2.value = mathOperation(node.op2)	
 	try:
 		node.value = caculate(node.op1.value, node.op2.value, node.name)
-	except TypeError:
-		pass
+	except TypeError: pass
 	return node.value	
 
 
@@ -81,8 +80,7 @@ class Interpreter:
 			
 			try:
 				node.value = caculate(node.op1.value, node.op2.value, node.name)
-			except TypeError:
-				pass
+			except TypeError: pass
 
 		if node.op1: self.countVariables(node.op1)
 		if node.op2: self.countVariables(node.op2)

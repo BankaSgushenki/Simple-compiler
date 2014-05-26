@@ -67,8 +67,7 @@ class Lexer:
 			token = self.tokens[self.nextTokenIndex]
 			self.nextTokenIndex += 1
 			return token
-		else:
-			return self.tokens[self.nextTokenIndex]
+		else: return self.tokens[self.nextTokenIndex]
 
 	def currentToken(self):
 		return self.tokens[self.nextTokenIndex]
