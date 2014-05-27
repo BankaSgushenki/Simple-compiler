@@ -13,11 +13,12 @@ class Lexer:
 	def __init__(self, ROOT_PATH):
         	self.ROOT_PATH = ROOT_PATH
 
-	patterns = {'NUM':'(?<!w|")(\d+)', 'STR':'"(\w|\s|\?|\!|\,)+"', 'COND':'while|if', "FUNC": 'print|input',  'OP':'[\+\-\*\>\<\=]', 
-	'BR':'[\(\)]', 'VAR':'(?<!")([a-z]+)', 'END':';','WS':'\s'}
+	patterns = {'NUM':'(?<!w|")(\d+)', 'STR':'"(\w|\s|\?|\!|\,)+"',
+	'COND':'while|if', "FUNC": 'print|input',  'OP':'[\+\-\*\>\<\=]|is', 
+	'BR':'[\(\)]', 'VAR':'(?<!")([a-z]+)', 'END':';|:','WS':'\s'}
 	tokens = []
 	lines = []
-	words = ["while", "if","print","input"]
+	words = ["while","if","is","print","input"]
 	nextTokenIndex = 0
 
 	def openFile(self):

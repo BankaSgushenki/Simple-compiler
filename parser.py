@@ -45,6 +45,22 @@ class Parser:
 				newNode.next = self.getExpression()
 				return newNode
 
+		if newNode.type is "COND":
+			if token.type is "VAR" or  "NUM" or "STR":
+				operandNode1 = Node(token.type, name = token.value)
+				token = self.lexer.nextToken()
+			if token.type is "OP":
+				operationdNode = Node(token.type, name = token.value)
+				newNode.op1 = operationdNode
+				operationdNode.op1 = operandNode1
+				token = self.lexer.nextToken()
+				operationdNode.op2 = Node(token.type, name = token.value)
+				token = self.lexer.nextToken()
+			if token.type is "END":
+				newNode.op2 = self.getExpression()
+				newNode.next = newNode.op2.op2
+				return newNode
+
 		if self.lexer.nextToken().value is "EOF": 
 			return newNode
 		else:

@@ -14,46 +14,62 @@ def caculate(first, second, operation):
 		result = str(first) + str(second)
 	return result
 
-def mathOperation(node):
+def math(node):
 	if node.op1.type is "VAR":
-		node.op1.value = Interpreter.variablesList[node.op1.name]
+		node.op1.value = Interpreter.variables[node.op1.name]
 	if node.op2.type is "VAR":
-		node.op2.value = Interpreter.variablesList[node.op2.name]
+		node.op2.value = Interpreter.variables[node.op2.name]
 	if node.op2.type is "OP":
-		node.op2.value = mathOperation(node.op2)	
+		node.op2.value = math(node.op2)	
 	try:
 		node.value = caculate(node.op1.value, node.op2.value, node.name)
 	except TypeError: pass
 	return node.value	
 
+def checkCondition(node):
+	if Interpreter.variables[node.op1.name] == node.op2.value: return 1
+	else: return 0
+
 
 def printFunction(node):
 	if node.type is "VAR": 
-		print Interpreter.variablesList[node.name]
+		print Interpreter.variables[node.name]
 		return
 	if node.type is "NUM" or "STR": print node.value
 
 def inputFunction(node):
-	Interpreter.variablesList[node.name] = raw_input()
+	Interpreter.variables[node.name] = raw_input()
 
 class Interpreter:
 	def __init__(self,tree):
 			self.tree = tree
 
-	variablesList = {}
+	variables = {}
+
+	def condition(self, node):
+		if node.op1.type is "OP":
+			if checkCondition(node.op1): 
+				self.execute(node.op2)
+			else: 
+				self.execute(node.next)
+
 
 	def execute(self, node):
 		if node.name == "print": printFunction(node.op1)
 		if node.name == "input": inputFunction(node.op1)
 		if node.name == "=":
-			self.variablesList[node.op1.name] = mathOperation(node.op2)
+			if node.op2.type is not "NUM":
+				self.variables[node.op1.name] = math(node.op2)
+		if node.name == "if": 
+			self.condition(node)
+			return
 		if node.op2: self.execute(node.op2)
 		if node.next: self.execute(node.next)
 
 	def findVariables(self, node):
 		if node.type is "VAR":
 			variable =  Int(node.name)
-			self.variablesList[variable.name] = variable.value
+			self.variables[variable.name] = variable.value
 
 		if node.op1: self.findVariables(node.op1)
 		if node.op2: self.findVariables(node.op2)
@@ -61,9 +77,9 @@ class Interpreter:
 
 	def defVariables(self, node):
 		if node.name is "=":
-			self.variablesList[node.op1.name] = node.op2.value
+			self.variables[node.op1.name] = node.op2.value
 			if node.op2.type is "VAR":
-				self.variablesList[name] = self.variablesList[node.op2.name]
+				self.variables[name] = self.variables[node.op2.name]
 
 		if node.op1: self.defVariables(node.op1)
 		if node.op2: self.defVariables(node.op2)
@@ -72,9 +88,9 @@ class Interpreter:
 	def countVariables(self, node):
 		if node.name is "+" or node.name is "-" or node.name is "*":
 			if node.op1.type is "VAR":
-				node.op1.value = self.variablesList[node.op1.name]
+				node.op1.value = self.variables[node.op1.name]
 			if node.op2.type is "VAR":
-				node.op2.value = self.variablesList[node.op2.name]
+				node.op2.value = self.variables[node.op2.name]
 			if node.op2.type is "OP":
 				self.countVariables(node.op2)
 			
@@ -94,7 +110,7 @@ class Interpreter:
 		if node.next: self.showTree(node.next)		
 
 	def showVars(self):
-		print self.variablesList
+		print self.variables
 
 	def interpretate(self):
 		self.findVariables(self.tree)
