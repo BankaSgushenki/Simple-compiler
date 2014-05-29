@@ -27,7 +27,8 @@ def math(node):
 	return node.value	
 
 def checkCondition(node):
-	if Interpreter.variables[node.op1.name] == node.op2.value: return 1
+	if str(Interpreter.variables[node.op1.name]) == str(node.op2.value): 
+		return 1
 	else: return 0
 
 
@@ -51,15 +52,17 @@ class Interpreter:
 			if checkCondition(node.op1): 
 				self.execute(node.op2)
 			else: 
-				self.execute(node.next)
-
+				if node.next is not None: 
+					self.execute(node.next)
 
 	def execute(self, node):
 		if node.name == "print": printFunction(node.op1)
 		if node.name == "input": inputFunction(node.op1)
 		if node.name == "=":
-			if node.op2.type is not "NUM":
-				self.variables[node.op1.name] = math(node.op2)
+			if node.op2.value is not None:
+				self.variables[node.op1.name] = node.op2.value
+			else:
+				self.variables[node.op1.name] = math(node.op2) 
 		if node.name == "if": 
 			self.condition(node)
 			return
@@ -89,8 +92,14 @@ class Interpreter:
 		if node.name is "+" or node.name is "-" or node.name is "*":
 			if node.op1.type is "VAR":
 				node.op1.value = self.variables[node.op1.name]
+			if node.op1.value is None:
+				node.value = None
+				return;
 			if node.op2.type is "VAR":
 				node.op2.value = self.variables[node.op2.name]
+			if node.op2.value is None:
+				node.value = None
+				return;
 			if node.op2.type is "OP":
 				self.countVariables(node.op2)
 			

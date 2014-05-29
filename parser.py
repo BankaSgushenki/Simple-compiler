@@ -10,8 +10,6 @@ class Node:
 
 class Parser:
 
-	PROGRAM, VAR, NUMBER, PRINT, OP = range(5)
-
 	def __init__(self, lexer):
 		self.lexer = lexer
 
