@@ -18,35 +18,37 @@ class Parser:
 		return tree
 
 	def getExpression(self):
+		errorsFlag = 0
 		token = self.lexer.nextToken()
 		newNode = Node(token.type, name = token.value)
+		token = self.lexer.nextToken()
 
-		if newNode.type is "VAR" or "NUM" or "STR":
-			token = self.lexer.nextToken()
-			if token.type is "OP":
-				operationNode = Node(token.type, name = token.value)
-				tempNode = newNode
-				newNode = operationNode
-				newNode.op1 = tempNode
-				newNode.op2 = self.getExpression()
-			if token.type is "END":
-				return newNode
+		if token.type is "OP":
+			operationNode = Node(token.type, name = token.value)
+			tempNode = newNode
+			newNode = operationNode
+			newNode.op1 = tempNode
+			newNode.op2 = self.getExpression()
+		if token.type is "END":
+			return newNode
 
 		if newNode.type is "FUNC":
-			if token.type is "VAR" or  "NUM" or "STR":
+			if token.type is "VAR" or token.type is "STR":
 				operandNode = Node(token.type, name = token.value)
 				newNode.op1 = operandNode
 				token = self.lexer.nextToken()
-			if token.type is "OP":
-				newNode.op1 = self.getExpression()
+
 			if token.type is "END":
 				newNode.next = self.getExpression()
 				return newNode
+			else: 
+				print "Invalid token: ", token.value, ": line: ", token.strNumber 
+				exit (0)
 
 		if newNode.type is "COND":
-			if token.type is "VAR" or  "NUM" or "STR":
-				operandNode1 = Node(token.type, name = token.value)
-				token = self.lexer.nextToken()
+			operandNode1 = Node(token.type, name = token.value)
+			token = self.lexer.nextToken()
+
 			if token.type is "OP":
 				operationdNode = Node(token.type, name = token.value)
 				newNode.op1 = operationdNode
@@ -58,6 +60,9 @@ class Parser:
 				newNode.op2 = self.getExpression()
 				newNode.next = newNode.op2.op2
 				return newNode
+			else: 
+				print "Invalid token: ", token.value, ": line: ", token.strNumber
+				exit (0)
 
 		if self.lexer.nextToken().value is "EOF": 
 			return newNode

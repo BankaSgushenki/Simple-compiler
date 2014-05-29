@@ -1,5 +1,6 @@
 a = "Hello ";
-print "what is your name";
+print a;
+print "what is your name?";
 input b;
 c = a + b;
 print c;
@@ -10,3 +11,5 @@ input b;
 c = a + b;
 print c;
 if c is 10: print "it is ten";
+c = c + 1;
+print c;
